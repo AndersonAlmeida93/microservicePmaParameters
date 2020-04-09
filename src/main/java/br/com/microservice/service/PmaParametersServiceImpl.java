@@ -4,17 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import br.com.microservice.model.PmaParameters;
 import br.com.microservice.model.dto.PmaParametersDto;
 import br.com.microservice.model.dto.UpdatePmaParameters;
-import br.com.microservice.model.enun.ActionEnum;
 import br.com.microservice.repository.PmaParametersRepository;
 
 @Service
@@ -51,42 +52,6 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	}
 
 	@Override
-	public List<PmaParametersDto> listAll() {
-
-		List<PmaParameters> pmas = pmaRepository.findAll();
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<PmaParametersDto> listByPartners(String partner) {
-
-		List<PmaParameters> pmas = pmaRepository.findByPartnerIgnoreCase(partner);
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<PmaParametersDto> listByReasonCode(Integer reasonCode) {
-
-		List<PmaParameters> pmas = pmaRepository.findByReasonCode(reasonCode);
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
-
-	}
-
-	@Override
-	public List<PmaParametersDto> listByAction(ActionEnum action) {
-
-		List<PmaParameters> pmas = pmaRepository.findByActionPma(action);
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<PmaParametersDto> listByLivpnr(String livpnr) {
-
-		List<PmaParameters> pmas = pmaRepository.findByLivpnr(livpnr);
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
-	}
-
-	@Override
 	public PmaParametersDto update(Integer id, UpdatePmaParameters updateParameters) {
 
 		Optional<PmaParameters> optiona = pmaRepository.findById(id);
@@ -109,6 +74,30 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 			return modelMapper.map(pma, PmaParametersDto.class);
 
 		}
+
+	}
+	
+
+	@Override
+	public List<PmaParametersDto> getPmaDtos(String partner, Integer reasonCode, String actionPma, String livpnr) {
+
+		List<PmaParameters> pmas = pmaRepository.findAll((Specification<PmaParameters>) (root, cq, cb) -> {
+			Predicate p = cb.conjunction();
+			if (!StringUtils.isEmpty(partner)) {
+				p = cb.and(p, cb.like(root.get("partner"), "%" + partner + "%"));
+			}
+			if (reasonCode != null) {
+				p = cb.and(p, cb.like(root.get("reasonCode").as(String.class), "%" + reasonCode + "%"));
+			}
+			if (!StringUtils.isEmpty(actionPma)) {
+				p = cb.and(p, cb.like(root.get("actionPma"), "%" + actionPma + "%"));
+			}
+			if (!StringUtils.isEmpty(livpnr)) {
+				p = cb.and(p, cb.like(root.get("livpnr"), "%" + livpnr + "%"));
+			}
+			return p;
+		});
+		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
 
 	}
 
