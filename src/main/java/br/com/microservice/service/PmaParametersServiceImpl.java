@@ -4,19 +4,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import br.com.microservice.model.PmaParameters;
 import br.com.microservice.model.dto.PmaParametersDto;
 import br.com.microservice.model.dto.UpdatePmaParameters;
+import br.com.microservice.model.enun.ActionEnum;
 import br.com.microservice.repository.PmaParametersRepository;
+import br.com.microservice.specification.PmaSpecification;
 
 @Service
 public class PmaParametersServiceImpl implements PmaParametersService {
@@ -26,6 +26,9 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 
 	@Autowired
 	private PmaParametersRepository pmaRepository;
+
+	@Autowired
+	private PmaSpecification pmaSpecification;
 
 	@Override
 	@Transactional
@@ -76,27 +79,11 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 		}
 
 	}
-	
 
 	@Override
-	public List<PmaParametersDto> getPmaDtos(String partner, Integer reasonCode, String actionPma, String livpnr) {
+	public List<PmaParametersDto> getPmaDtos(String partner, Integer reasonCode, ActionEnum actionPma, String livpnr) {
 
-		List<PmaParameters> pmas = pmaRepository.findAll((Specification<PmaParameters>) (root, cq, cb) -> {
-			Predicate p = cb.conjunction();
-			if (!StringUtils.isEmpty(partner)) {
-				p = cb.and(p, cb.like(root.get("partner"), "%" + partner + "%"));
-			}
-			if (reasonCode != null) {
-				p = cb.and(p, cb.like(root.get("reasonCode").as(String.class), "%" + reasonCode + "%"));
-			}
-			if (!StringUtils.isEmpty(actionPma)) {
-				p = cb.and(p, cb.like(root.get("actionPma"), "%" + actionPma + "%"));
-			}
-			if (!StringUtils.isEmpty(livpnr)) {
-				p = cb.and(p, cb.like(root.get("livpnr"), "%" + livpnr + "%"));
-			}
-			return p;
-		});
+		List<PmaParameters> pmas = pmaSpecification.getPmaDtos(partner, reasonCode, actionPma, livpnr);
 		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
 
 	}

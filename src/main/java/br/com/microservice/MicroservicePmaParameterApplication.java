@@ -11,10 +11,10 @@ public class MicroservicePmaParameterApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MicroservicePmaParameterApplication.class, args);
 	}
-	
+
 	@Bean
 	public ModelMapper modelMapper() {
-		
+
 		return new ModelMapper();
 	}
 

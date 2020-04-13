@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.microservice.model.dto.PmaParametersDto;
 import br.com.microservice.model.dto.UpdatePmaParameters;
+import br.com.microservice.model.enun.ActionEnum;
 
 public interface PmaParametersService {
 
@@ -13,5 +14,5 @@ public interface PmaParametersService {
 	
 	PmaParametersDto update(Integer id, UpdatePmaParameters updateParameters);
 	
-	List<PmaParametersDto> getPmaDtos(String partner, Integer reasonCode, String actionPma ,String livpnr);
+	List<PmaParametersDto> getPmaDtos(String partner, Integer reasonCode, ActionEnum actionPma ,String livpnr);
 }
