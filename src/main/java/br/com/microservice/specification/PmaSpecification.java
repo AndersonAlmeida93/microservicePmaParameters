@@ -1,44 +1,63 @@
 package br.com.microservice.specification;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import br.com.microservice.model.PmaParameters;
-import br.com.microservice.model.enun.ActionEnum;
-import br.com.microservice.repository.PmaParametersRepository;
+import br.com.microservice.model.dto.PmaParametersRequest;
 
 @Component
 public final class PmaSpecification {
 
-	@Autowired
-	private PmaParametersRepository pmaRepository;
+	private static final String FIELD_PARTNER = "partner";
+	private static final String FIELD_REASON_CODE = "reasonCode";
+	private static final String FIELD_ACTION_PMA = "actionPma";
+	private static final String FIELD_LIVPNR = "livpnr";
 
-	public List<PmaParameters> getPmaDtos(String partner, Integer reasonCode, ActionEnum actionPma, String livpnr) {
+	private PmaSpecification() {
 
-		List<PmaParameters> pmas = pmaRepository.findAll((Specification<PmaParameters>) (root, cq, cb) -> {
-
-			Predicate p = cb.conjunction();
-			if (!StringUtils.isEmpty(partner)) {
-				p = cb.and(p, cb.equal(root.get("partner"), partner));
-			}
-			if (reasonCode != null) {
-				p = cb.and(p, cb.equal(root.get("reasonCode"),reasonCode));
-			}
-			if (actionPma != null) {
-				p = cb.and(p, cb.equal(root.get("actionPma"), actionPma));
-			}
-			if (!StringUtils.isEmpty(livpnr)) {
-				p = cb.and(p, cb.equal(root.get("livpnr"), livpnr));
-			}
-			return p;
-		});
-
-		return pmas;
 	}
+
+	public static Specification<PmaParameters> findByParam(PmaParametersRequest filter) {
+
+		return new Specification<PmaParameters>() {
+
+			private static final long serialVersionUID = 1L;
+
+			public Predicate toPredicate(Root<PmaParameters> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+
+				List<Predicate> predicates = new ArrayList<>();
+
+				if (StringUtils.isNotEmpty(filter.getPartner())) {
+					predicates.add(cb.equal(root.get(FIELD_PARTNER), filter.getPartner()));
+				}
+
+				if (filter.getReasonCode() != null) {
+					predicates.add(cb.equal(root.get(FIELD_REASON_CODE), filter.getReasonCode()));
+				}
+
+				if (filter.getActionPma() != null) {
+					predicates.add(cb.equal(root.get(FIELD_ACTION_PMA), filter.getActionPma()));
+				}
+
+				if (StringUtils.isNotEmpty(filter.getLivpnr())) {
+					predicates.add(cb.equal(root.get(FIELD_LIVPNR), filter.getLivpnr()));
+				}
+
+				query.distinct(true);
+				return cb.and(predicates.toArray(new Predicate[] {}));
+			}
+
+		};
+	}
+
 }

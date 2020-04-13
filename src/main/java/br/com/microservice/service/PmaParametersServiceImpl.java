@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.microservice.model.PmaParameters;
 import br.com.microservice.model.dto.PmaParametersDto;
+import br.com.microservice.model.dto.PmaParametersRequest;
 import br.com.microservice.model.dto.UpdatePmaParameters;
-import br.com.microservice.model.enun.ActionEnum;
 import br.com.microservice.repository.PmaParametersRepository;
 import br.com.microservice.specification.PmaSpecification;
 
@@ -63,7 +63,7 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 		}
 
 		PmaParameters action = pmaRepository.findActionPmaById(id);
-		String actionPma = action.getActionPma().toString();
+		String actionPma = action.getActionPma().name().toString();
 		if (StringUtils.equals(actionPma, "UPDATE")) {
 			PmaParameters pmaParameters = pmaRepository.getOne(id);
 			pmaParameters.setDescriptionCode(updateParameters.getDescriptionCode());
@@ -81,9 +81,9 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	}
 
 	@Override
-	public List<PmaParametersDto> getPmaDtos(String partner, Integer reasonCode, ActionEnum actionPma, String livpnr) {
+	public List<PmaParametersDto> getPmaDtos(PmaParametersRequest request) {
 
-		List<PmaParameters> pmas = pmaSpecification.getPmaDtos(partner, reasonCode, actionPma, livpnr);
+		List<PmaParameters> pmas = pmaRepository.findAll(pmaSpecification.findByParam(request));
 		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
 
 	}
