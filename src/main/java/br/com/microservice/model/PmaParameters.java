@@ -39,4 +39,15 @@ public class PmaParameters {
 
 	private String value;
 
+	public PmaParameters(String partner, Integer reasonCode, String descriptionCode, ActionEnum actionPma,
+			String livpnr, String value) {
+		super();
+		this.partner = partner;
+		this.reasonCode = reasonCode;
+		this.descriptionCode = descriptionCode;
+		this.actionPma = actionPma;
+		this.livpnr = livpnr;
+		this.value = value;
+	}
+
 }

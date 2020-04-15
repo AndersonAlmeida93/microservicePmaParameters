@@ -46,13 +46,13 @@ public class PmaParametersController {
 		List<PmaParametersDto> pmas = pmaServiceImpl.getPmaDtos(request);
 		return ResponseEntity.ok().body(pmas);
 	}
-	
+
 	@PatchMapping("/{id}")
 	public ResponseEntity<PmaParametersDto> update(@PathVariable Integer id,
 			@Valid @RequestBody UpdatePmaParameters updateParameters) {
 
 		PmaParametersDto update = pmaServiceImpl.update(id, updateParameters);
-		return ResponseEntity.ok().body(update); 
+		return ResponseEntity.ok().body(update);
 	}
 
 }

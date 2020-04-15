@@ -27,9 +27,6 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	@Autowired
 	private PmaParametersRepository pmaRepository;
 
-	@Autowired
-	private PmaSpecification pmaSpecification;
-
 	@Override
 	@Transactional
 	public PmaParametersDto created(PmaParametersDto pmaDto) {
@@ -83,7 +80,7 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	@Override
 	public List<PmaParametersDto> getPmaDtos(PmaParametersRequest request) {
 
-		List<PmaParameters> pmas = pmaRepository.findAll(pmaSpecification.findByParam(request));
+		List<PmaParameters> pmas = pmaRepository.findAll(PmaSpecification.findByParam(request));
 		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
 
 	}
