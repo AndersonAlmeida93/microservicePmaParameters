@@ -42,4 +42,14 @@ public class PmaParametersDto {
 	@Length(min = 1, max = 20, message = "the length must be between 1 and 20 characters")
 	private String value;
 
+	public PmaParametersDto(String partner, Integer reasonCode, String descriptionCode, ActionEnum actionPma,
+			String livpnr, String value) {
+		this.partner = partner;
+		this.reasonCode = reasonCode;
+		this.descriptionCode = descriptionCode;
+		this.actionPma = actionPma;
+		this.livpnr = livpnr;
+		this.value = value;
+	}
+
 }

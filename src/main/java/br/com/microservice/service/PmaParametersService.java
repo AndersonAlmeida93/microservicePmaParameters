@@ -10,7 +10,7 @@ public interface PmaParametersService {
 
 	PmaParametersDto created(PmaParametersDto pmaDto);
 
-	void delete(Integer id);
+	boolean delete(Integer id);
 
 	PmaParametersDto update(Integer id, UpdatePmaParameters updateParameters);
 

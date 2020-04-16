@@ -21,7 +21,7 @@ import br.com.microservice.model.dto.UpdatePmaParameters;
 import br.com.microservice.service.PmaParametersServiceImpl;
 
 @RestController
-@RequestMapping("/parameters")
+@RequestMapping("/api/v1/parameters")
 public class PmaParametersController {
 
 	@Autowired

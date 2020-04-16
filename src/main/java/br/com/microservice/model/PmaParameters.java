@@ -41,7 +41,6 @@ public class PmaParameters {
 
 	public PmaParameters(String partner, Integer reasonCode, String descriptionCode, ActionEnum actionPma,
 			String livpnr, String value) {
-		super();
 		this.partner = partner;
 		this.reasonCode = reasonCode;
 		this.descriptionCode = descriptionCode;

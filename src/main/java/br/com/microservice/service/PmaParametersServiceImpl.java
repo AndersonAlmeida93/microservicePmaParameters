@@ -38,10 +38,11 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	}
 
 	@Override
-	public void delete(Integer id) {
+	public boolean delete(Integer id) {
 
 		Optional<PmaParameters> pma = pmaRepository.findById(id);
 		pmaRepository.deleteById(id);
+		return true;
 
 	}
 
