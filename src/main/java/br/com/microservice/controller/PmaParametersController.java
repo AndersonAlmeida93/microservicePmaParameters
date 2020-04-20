@@ -34,12 +34,6 @@ public class PmaParametersController {
 		return ResponseEntity.ok().body(newPmaDto);
 	}
 
-	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Integer id) {
-
-		pmaServiceImpl.delete(id);
-	}
-
 	@GetMapping
 	public ResponseEntity<List<PmaParametersDto>> getPmas(PmaParametersRequest request) {
 
@@ -53,6 +47,12 @@ public class PmaParametersController {
 
 		PmaParametersDto update = pmaServiceImpl.update(id, updateParameters);
 		return ResponseEntity.ok().body(update);
+	}
+
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Integer id) {
+
+		pmaServiceImpl.delete(id);
 	}
 
 }

@@ -32,17 +32,19 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	public PmaParametersDto created(PmaParametersDto pmaDto) {
 
 		PmaParameters pmaParam = modelMapper.map(pmaDto, PmaParameters.class);
+		if (!pmaParam.getActionPma().name().equals("UPDATE")) {
+			pmaParam.setValue(null);
+		}
 		pmaRepository.save(pmaParam);
 		return modelMapper.map(pmaParam, PmaParametersDto.class);
 
 	}
 
 	@Override
-	public boolean delete(Integer id) {
+	public List<PmaParametersDto> getPmaDtos(PmaParametersRequest request) {
 
-		Optional<PmaParameters> pma = pmaRepository.findById(id);
-		pmaRepository.deleteById(id);
-		return true;
+		List<PmaParameters> pmas = pmaRepository.findAll(PmaSpecification.findByParam(request));
+		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
 
 	}
 
@@ -62,27 +64,29 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 
 		PmaParameters action = pmaRepository.findActionPmaById(id);
 		String actionPma = action.getActionPma().name().toString();
-		if (StringUtils.equals(actionPma, "UPDATE")) {
-			PmaParameters pmaParameters = pmaRepository.getOne(id);
-			pmaParameters.setDescriptionCode(updateParameters.getDescriptionCode());
-			pmaParameters.setValue(updateParameters.getValue());
-			pmaRepository.save(pmaParameters);
-			return modelMapper.map(pmaParameters, PmaParametersDto.class);
-		} else {
-			PmaParameters pma = pmaRepository.getOne(id);
-			pma.setDescriptionCode(updateParameters.getDescriptionCode());
-			pmaRepository.save(pma);
-			return modelMapper.map(pma, PmaParametersDto.class);
+		PmaParameters pmaParameters = pmaRepository.getOne(id);
+		pmaParameters.setDescriptionCode(updateParameters.getDescriptionCode());
 
+		if (StringUtils.equals(actionPma, "UPDATE")) {
+			pmaParameters.setValue(updateParameters.getValue());
+			return modelMapper.map(pmaParameters, PmaParametersDto.class);
 		}
+
+		pmaRepository.save(pmaParameters);
+		return modelMapper.map(pmaParameters, PmaParametersDto.class);
 
 	}
 
 	@Override
-	public List<PmaParametersDto> getPmaDtos(PmaParametersRequest request) {
+	public void delete(Integer id) {
 
-		List<PmaParameters> pmas = pmaRepository.findAll(PmaSpecification.findByParam(request));
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
+		Optional<PmaParameters> pma = pmaRepository.findById(id);
+
+		if (!pma.isPresent()) {
+
+		}
+
+		pmaRepository.deleteById(id);
 
 	}
 

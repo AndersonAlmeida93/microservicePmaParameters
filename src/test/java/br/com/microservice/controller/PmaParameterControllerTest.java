@@ -1,13 +1,15 @@
-package br.com.microservice;
+package br.com.microservice.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +27,18 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import br.com.microservice.controller.PmaParametersController;
 import br.com.microservice.model.dto.PmaParametersDto;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PmaParameterControllerTest {
 
 	private static final String BASE_URL = "/api/v1/parameters";
 
 	PmaParametersDto pmaDto;
 
-	@Autowired
 	@InjectMocks
 	private PmaParametersController pmaParametersController;
 
@@ -55,7 +56,7 @@ public class PmaParameterControllerTest {
 	}
 
 	@Test
-	public void testCreatedPma() throws Exception {
+	public void testCreated() throws Exception {
 
 		String URI = BASE_URL;
 
@@ -72,39 +73,7 @@ public class PmaParameterControllerTest {
 	}
 
 	@Test
-	public void testUpdatePma() throws Exception {
-
-		String URI = BASE_URL;
-
-		File file = new ClassPathResource("json/UpdatePmaParameterDTO.json").getFile();
-		String jsonFile = new String(Files.readAllBytes(file.toPath()));
-
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(URI + "/" + 12).accept(MediaType.APPLICATION_JSON)
-				.content(jsonFile).contentType(MediaType.APPLICATION_JSON);
-
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		MockHttpServletResponse response = result.getResponse();
-
-		assertEquals(HttpStatus.OK.value(), response.getStatus());
-	}
-
-	@Test
-	public void testDeletePma() throws Exception {
-
-		String URI = BASE_URL;
-
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(URI + "/" + 15).accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON);
-
-		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-		MockHttpServletResponse response = result.getResponse();
-
-		assertEquals(HttpStatus.OK.value(), response.getStatus());
-
-	}
-
-	@Test
-	public void testGetPmaByFilter() throws Exception {
+	public void testGetPmas() throws Exception {
 
 		String URI = obterUrlCompleta();
 
@@ -114,6 +83,38 @@ public class PmaParameterControllerTest {
 		MockHttpServletResponse response = result.getResponse();
 
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	@Test
+	public void testUpdate() throws Exception {
+
+		String URI = BASE_URL;
+
+		File file = new ClassPathResource("json/UpdatePmaParameterDTO.json").getFile();
+		String jsonFile = new String(Files.readAllBytes(file.toPath()));
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(URI + "/" + 1).accept(MediaType.APPLICATION_JSON)
+				.content(jsonFile).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	@Test
+	public void testWhenDelete() throws Exception {
+
+		String URI = BASE_URL;
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(URI + "/" + 1).accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+
 	}
 
 	private String obterUrlCompleta() {
