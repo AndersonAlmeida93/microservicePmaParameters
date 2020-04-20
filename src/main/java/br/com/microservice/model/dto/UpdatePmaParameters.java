@@ -5,12 +5,11 @@ import javax.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor
 public class UpdatePmaParameters {
 
 	@NotEmpty(message = "can't be empty")

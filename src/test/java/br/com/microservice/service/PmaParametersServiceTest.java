@@ -1,21 +1,18 @@
 package br.com.microservice.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
 
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.microservice.model.dto.PmaParametersDto;
 import br.com.microservice.model.dto.PmaParametersRequest;
 import br.com.microservice.model.dto.UpdatePmaParameters;
+import br.com.microservice.model.enun.ActionEnum;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -32,19 +30,11 @@ import br.com.microservice.model.dto.UpdatePmaParameters;
 public class PmaParametersServiceTest {
 
 	@Mock
-	private ModelMapper modelMapper;
-
-	@Mock
 	private PmaParametersDto pmaDto;
 
 	@InjectMocks
+	@Autowired
 	private PmaParametersServiceImpl pmaServiceImpl;
-
-	@Before
-	public void setup() {
-
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	public void testCreated() throws Exception {
@@ -64,27 +54,31 @@ public class PmaParametersServiceTest {
 	@Test
 	public void testGetByFilter() throws Exception {
 
-		PmaParametersRequest request = new PmaParametersRequest();
+		PmaParametersRequest request = new PmaParametersRequest("", null, ActionEnum.UPDATE, "");
 		pmaServiceImpl.getPmaDtos(request);
-		assertThat(request);
 
 	}
 
 	@Test
 	public void testUpdated() throws Exception {
 
-		PmaParametersDto pmaDto = new PmaParametersDto();
-		pmaDto.setId(1);
-		UpdatePmaParameters request = new UpdatePmaParameters("new description", "new value");
-		pmaServiceImpl.update(1, request);
+		PmaParametersDto pmaDto = new PmaParametersDto(2, "AGSA", 9999, "description of partner AGSA",
+				ActionEnum.UPDATE, "teste", "value AGSA");
+		File file = new ClassPathResource("json/UpdatePmaParameterDTO.json").getFile();
+		String jsonFile = new String(Files.readAllBytes(file.toPath()));
+
+		ObjectMapper objmapper = new ObjectMapper();
+		UpdatePmaParameters updatePma = objmapper.readValue(jsonFile, UpdatePmaParameters.class);
+		pmaServiceImpl.update(pmaDto.getId(), updatePma);
+		assertEquals("new description", updatePma.getDescriptionCode());
 	}
 
 	@Test
 	public void testWhenDelete() throws Exception {
 
-		PmaParametersDto pmaDto = new PmaParametersDto();
-		pmaDto.setId(1);
-		pmaServiceImpl.delete(1);
+		PmaParametersDto pmaDto = new PmaParametersDto(2, "AGSA", 9999, "description of partner AGSA",
+				ActionEnum.UPDATE, "teste", "value AGSA");
+		pmaServiceImpl.delete(pmaDto.getId());
 	}
 
 }

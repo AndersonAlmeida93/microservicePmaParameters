@@ -11,6 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.microservice.exception.BadRequestException;
+import br.com.microservice.exception.NotFoudException;
 import br.com.microservice.model.PmaParameters;
 import br.com.microservice.model.dto.PmaParametersDto;
 import br.com.microservice.model.dto.PmaParametersRequest;
@@ -36,54 +38,57 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 			pmaParam.setValue(null);
 		}
 		pmaRepository.save(pmaParam);
-		return modelMapper.map(pmaParam, PmaParametersDto.class);
 
+		return modelMapper.map(pmaParam, PmaParametersDto.class);
 	}
 
 	@Override
 	public List<PmaParametersDto> getPmaDtos(PmaParametersRequest request) {
 
 		List<PmaParameters> pmas = pmaRepository.findAll(PmaSpecification.findByParam(request));
-		return pmas.stream().map(this::converToDto).collect(Collectors.toList());
+		return pmas.stream().map(obj -> modelMapper.map(obj, PmaParametersDto.class)).collect(Collectors.toList());
 
-	}
-
-	private PmaParametersDto converToDto(PmaParameters pma) {
-
-		PmaParametersDto pmaDto = modelMapper.map(pma, PmaParametersDto.class);
-		return pmaDto;
 	}
 
 	@Override
+	@Transactional
 	public PmaParametersDto update(Integer id, UpdatePmaParameters updateParameters) {
 
-		Optional<PmaParameters> optiona = pmaRepository.findById(id);
-		if (!optiona.isPresent()) {
+		if (id == null || id <= 0) {
 
+			throw new BadRequestException("Invalid Id " + id);
+		}
+		Optional<PmaParameters> option = pmaRepository.findById(id);
+		if (!option.isPresent()) {
+
+			throw new NotFoudException("No Registry Found!");
 		}
 
 		PmaParameters action = pmaRepository.findActionPmaById(id);
-		String actionPma = action.getActionPma().name().toString();
+		String actionPma = action.getActionPma().name();
 		PmaParameters pmaParameters = pmaRepository.getOne(id);
 		pmaParameters.setDescriptionCode(updateParameters.getDescriptionCode());
 
 		if (StringUtils.equals(actionPma, "UPDATE")) {
 			pmaParameters.setValue(updateParameters.getValue());
-			return modelMapper.map(pmaParameters, PmaParametersDto.class);
 		}
-
 		pmaRepository.save(pmaParameters);
 		return modelMapper.map(pmaParameters, PmaParametersDto.class);
 
 	}
 
 	@Override
+	@Transactional
 	public void delete(Integer id) {
 
+		if (id == null || id <= 0) {
+
+			throw new BadRequestException("Invalid Id " + id);
+		}
 		Optional<PmaParameters> pma = pmaRepository.findById(id);
 
 		if (!pma.isPresent()) {
-
+			throw new NotFoudException("No Registry Found!");
 		}
 
 		pmaRepository.deleteById(id);
