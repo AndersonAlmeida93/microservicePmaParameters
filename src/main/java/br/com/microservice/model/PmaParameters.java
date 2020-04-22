@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "pma_parameters")
 public class PmaParameters {
 

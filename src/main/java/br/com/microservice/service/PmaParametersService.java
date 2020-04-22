@@ -14,6 +14,6 @@ public interface PmaParametersService {
 
 	PmaParametersDto update(Integer id, UpdatePmaParameters updateParameters);
 
-	void delete(Integer id);
+	boolean delete(Integer id);
 
 }

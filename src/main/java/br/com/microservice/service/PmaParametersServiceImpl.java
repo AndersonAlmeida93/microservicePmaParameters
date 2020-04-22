@@ -79,7 +79,7 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 
 	@Override
 	@Transactional
-	public void delete(Integer id) {
+	public boolean delete(Integer id) {
 
 		if (id == null || id <= 0) {
 
@@ -92,6 +92,7 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 		}
 
 		pmaRepository.deleteById(id);
+		return true;
 
 	}
 
