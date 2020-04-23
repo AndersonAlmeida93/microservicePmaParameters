@@ -1,0 +1,8 @@
+{
+	"partner":"LOSA",
+	"reasonCode":8888,
+	"descriptionCode":"description of partner LOSA",
+	"actionPma":"SUBMIT_ORDER",
+	"livpnr":"teste",
+	"value":"value LOSA"
+}

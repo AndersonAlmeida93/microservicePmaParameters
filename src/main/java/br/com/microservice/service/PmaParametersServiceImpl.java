@@ -46,6 +46,9 @@ public class PmaParametersServiceImpl implements PmaParametersService {
 	public List<PmaParametersDto> getPmaDtos(PmaParametersRequest request) {
 
 		List<PmaParameters> pmas = pmaRepository.findAll(PmaSpecification.findByParam(request));
+		if (pmas.isEmpty()) {
+			throw new NotFoudException("No Registry Found!");
+		}
 		return pmas.stream().map(obj -> modelMapper.map(obj, PmaParametersDto.class)).collect(Collectors.toList());
 
 	}

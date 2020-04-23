@@ -10,13 +10,11 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 import br.com.microservice.model.enun.ActionEnum;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity(name = "pma_parameters")
 public class PmaParameters {
 
@@ -43,5 +41,15 @@ public class PmaParameters {
 	private String livpnr;
 
 	private String value;
+
+	public PmaParameters(@NotNull String partner, @NotNull Integer reasonCode, @NotNull String descriptionCode,
+			@NotNull ActionEnum actionPma, String livpnr, String value) {
+		this.partner = partner;
+		this.reasonCode = reasonCode;
+		this.descriptionCode = descriptionCode;
+		this.actionPma = actionPma;
+		this.livpnr = livpnr;
+		this.value = value;
+	}
 
 }

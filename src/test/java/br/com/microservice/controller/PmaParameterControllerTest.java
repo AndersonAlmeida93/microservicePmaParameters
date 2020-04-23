@@ -37,6 +37,9 @@ public class PmaParameterControllerTest {
 
 	private static final String BASE_URL = "/api/v1/parameters";
 
+	private static final Integer DELETE_ID = 1000;
+	private static final Integer UPDATE_ID = 1000;
+
 	PmaParametersDto pmaDto;
 
 	@InjectMocks
@@ -73,6 +76,23 @@ public class PmaParameterControllerTest {
 	}
 
 	@Test
+	public void testCreatedIllegalArguments() throws Exception {
+
+		String URI = BASE_URL;
+
+		File file = new ClassPathResource("json/CreatePmaParameterIllegalArgumentsDTO.json").getFile();
+		String jsonFile = new String(Files.readAllBytes(file.toPath()));
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post(URI).accept(MediaType.APPLICATION_JSON)
+				.content(jsonFile).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+	}
+
+	@Test
 	public void testGetPmas() throws Exception {
 
 		String URI = obterUrlCompleta();
@@ -103,6 +123,40 @@ public class PmaParameterControllerTest {
 	}
 
 	@Test
+	public void testUpdateNotFound() throws Exception {
+
+		String URI = BASE_URL;
+
+		File file = new ClassPathResource("json/UpdatePmaParameterDTO.json").getFile();
+		String jsonFile = new String(Files.readAllBytes(file.toPath()));
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(URI + "/" + UPDATE_ID)
+				.accept(MediaType.APPLICATION_JSON).content(jsonFile).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+	}
+
+	@Test
+	public void testUpdateInvalidId() throws Exception {
+
+		String URI = BASE_URL;
+
+		File file = new ClassPathResource("json/UpdatePmaParameterDTO.json").getFile();
+		String jsonFile = new String(Files.readAllBytes(file.toPath()));
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.patch(URI + "/" + null)
+				.accept(MediaType.APPLICATION_JSON).content(jsonFile).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+	}
+
+	@Test
 	public void testWhenDelete() throws Exception {
 
 		String URI = BASE_URL;
@@ -115,6 +169,32 @@ public class PmaParameterControllerTest {
 
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 
+	}
+
+	@Test
+	public void testDeleteNotFound() throws Exception {
+		String URI = BASE_URL;
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(URI + "/" + DELETE_ID)
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+	}
+
+	@Test
+	public void testDeleteInvalidId() throws Exception {
+		String URI = BASE_URL;
+
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(URI + "/" + 0).accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
 	}
 
 	private String obterUrlCompleta() {
